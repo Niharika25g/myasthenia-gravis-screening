@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Assessment Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .report-header { background: #ffffff; border-bottom: 4px solid #1e3c72; padding: 25px 0; margin-bottom: 30px; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .badge-risk-high { background-color: #dc3545; color: white; font-size: 1.1rem; padding: 10px 20px; }
+        .badge-risk-low { background-color: #198754; color: white; font-size: 1.1rem; padding: 10px 20px; }
+        .indicator-card { background: #f8f9fa; border-left: 5px solid #2a5298; padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+        @media print {
+            .btn, .report-header a { display: none !important; }
+            body { background-color: white !important; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-header shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="mb-0 text-dark fw-bold"><i class="fa-solid fa-file-waveform text-primary"></i> Comprehensive Neurological Screening Report</h3>
+                <small class="text-muted">Generated via NeuroSurg AI Multimodal Analysis Engine</small>
+            </div>
+            <div>
+                <button onclick="window.print()" class="btn btn-primary me-2"><i class="fa-solid fa-download"></i> Export PDF Report</button>
+                <a href="/" class="btn btn-outline-primary"><i class="fa-solid fa-arrow-left"></i> New Screening</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+        <div class="row g-4">
+            <!-- Left Panel: Summary & Recommendation -->
+            <div class="col-lg-4">
+                <div class="card p-4 text-center h-100">
+                    <h5 class="text-muted mb-3">Diagnostic Assessment Status</h5>
+                    <div class="my-3">
+    {% if risk_level.startswith('High Risk') %}
+        <span class="badge badge-risk-high rounded-pill shadow-sm"><i class="fa-solid fa-triangle-exclamation"></i> High Clinical Risk</span>
+    {% else %}
+        <span class="badge badge-risk-low rounded-pill shadow-sm"><i class="fa-solid fa-circle-check"></i> Low Risk / Stable</span>
+    {% endif %}
+</div>
+<h1 class="fw-bold text-dark mt-2">{{ probability }}%</h1>
+<p class="text-muted small">Neural Network Confidence Rating</p>
+<hr>
+<div class="text-start">
+    <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-user-doctor text-primary"></i> Recommended Clinical Action:</h6>
+    <p class="small text-secondary" style="line-height: 1.6;">
+        {% if risk_level.startswith('High Risk') %}
+            The multimodal analysis detected significant biomarker variance in facial/ocular tracking or vocal energy stability. It is strongly advised to route this patient profile to a specialized neurologist for formal clinical evaluation, electromyography (EMG), or targeted diagnostic panels.
+        {% else %}
+            Evaluated motor coordination indices and acoustic parameters are within standard baseline thresholds. No immediate neurological intervention is indicated; schedule routine follow-up as standard protocol.
+        {% endif %}
+    </p>
+</div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Clinical Modality Insights -->
+            <div class="col-lg-8">
+                <div class="card p-4">
+                    <h4 class="text-primary mb-3"><i class="fa-solid fa-microscope"></i> Clinical Modality Breakdown</h4>
+                    <p class="text-muted small">Evaluated behavioral and acoustic markers extracted from the patient assessment files:</p>
+
+                    <!-- Specific Extracted Symptoms Box -->
+                    <div class="indicator-card" style="border-left-color: #dc3545;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-list-check text-danger"></i> Extracted Biomarker Symptoms</h5>
+                            <span class="badge bg-danger">Biometric Extraction</span>
+                        </div>
+                        <ul class="small text-secondary mt-2 mb-0 ps-3">
+                            {% if extracted_symptoms %}
+                                {% for symptom in extracted_symptoms %}
+                                    <li class="mb-1">{{ symptom }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <li>No explicit warning indicators extracted from current inputs.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <!-- Ocular/Facial Indicator in report.html -->
+<div class="indicator-card">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-eye text-info"></i> Ocular & Facial Motor Control</h5>
+        <span class="badge {% if risk_level == 'High Risk' or (ptosis_ratio != 'N/A' and ptosis_ratio|float > 0.05) %}bg-danger{% else %}bg-success{% endif %}">
+            {% if ptosis_ratio == 'N/A' %}
+                Not Evaluated
+            {% elif risk_level == 'High Risk' or ptosis_ratio|float > 0.05 %}
+                Irregularity Detected
+            {% else %}
+                Normal Baseline
+            {% endif %}
+        </span>
+    </div>
+    <p class="text-muted small mt-2 mb-0">
+        Evaluates subtle eyelid droopiness (ptosis frequency) and muscular asymmetry across video frames. (Value: {{ ptosis_ratio }})
+    </p>
+</div>
+
+                    <!-- Acoustic Indicator -->
+                    <div class="indicator-card" style="border-left-color: #ffc107;">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-microphone-lines text-warning"></i> Vocal Stability & Acoustic Energy</h5>
+                            <span class="badge {% if energy_level != 'N/A' and energy_level|float < 0.02 %}bg-danger{% else %}bg-success{% endif %}">
+                                {% if energy_level == 'N/A' %}
+                                    Not Evaluated
+                                {% elif energy_level|float < 0.02 %}
+                                    Fatigue Noted
+                                {% else %}
+                                    Stable Output
+                                {% endif %}
+                            </span>
+                        </div>
+                        <p class="text-muted small mt-2 mb-0">
+                            Analyzes MFCC coefficients and energy contours in speech waveforms to reflect vocal stamina. (Value: {{ energy_level }})
+                        </p>
+                    </div>
+
+                    <div class="alert alert-light border mt-4 text-secondary small">
+                        <i class="fa-solid fa-circle-info text-primary"></i> <strong>Confidentiality Note:</strong> This report is generated automatically for clinical decision support and triage simulation.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

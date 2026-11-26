@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Feature Inspection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-4 mb-5">
+        <div class="card shadow-sm p-4">
+            <h2 class="text-primary mb-2">Multimodal Feature Extraction & Processing Pipeline</h2>
+            <p class="text-muted">Detailed numerical breakdown of features extracted from both modalities for neural network inference.</p>
+            <hr>
+
+            <div class="row g-4">
+                <!-- Video Processing Column -->
+                <div class="col-md-6">
+                    <div class="card border-primary p-3 h-100">
+                        <h4 class="text-primary"><i class="fa-solid fa-video"></i> Video Modality Features</h4>
+                        {% if video and video.error %}
+                            <div class="alert alert-danger mt-2">{{ video.error }}</div>
+                        {% elif video %}
+                            <p class="mt-2 mb-1"><strong>File:</strong> <code>{{ video.filename }}</code></p>
+                            <p class="mb-2"><strong>Metric:</strong> {{ video.detected_metric }}</p>
+                            <h6 class="mt-3">Extracted 15-Dim Biometric Vector:</h6>
+                            <div class="bg-dark text-light p-2 rounded font-monospace small" style="word-break: break-all;">
+                                {{ video.extracted_vector }}
+                            </div>
+                        {% else %}
+                            <p class="text-muted mt-2">No video modality provided in this session.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Audio Processing Column -->
+                <div class="col-md-6">
+                    <div class="card border-success p-3 h-100">
+                        <h4 class="text-success"><i class="fa-solid fa-microphone"></i> Audio Modality Features</h4>
+                        {% if audio and audio.error %}
+                            <div class="alert alert-danger mt-2">{{ audio.error }}</div>
+                        {% elif audio %}
+                            <p class="mt-2 mb-1"><strong>File:</strong> <code>{{ audio.filename }}</code></p>
+                            <ul class="list-group list-group-flush small mb-3">
+                                <li class="list-group-item bg-transparent"><strong>Sampling Rate:</strong> {{ audio.sampling_rate }}</li>
+                                <li class="list-group-item bg-transparent"><strong>Total Samples:</strong> {{ audio.total_samples }}</li>
+                                <li class="list-group-item bg-transparent"><strong>RMS Energy:</strong> {{ audio.rms_energy }}</li>
+                                <li class="list-group-item bg-transparent"><strong>Spectral Centroid:</strong> {{ audio.spectral_centroid }} Hz</li>
+                            </ul>
+                            <h6>Extracted MFCC Means (13 Coefficients):</h6>
+                            <div class="bg-dark text-light p-2 rounded font-monospace small" style="word-break: break-all;">
+                                {{ audio.mfcc_values }}
+                            </div>
+                        {% else %}
+                            <p class="text-muted mt-2">No audio modality provided in this session.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-4 mb-0">
+                <strong>Neural Network Fusion:</strong> Both feature vectors are concatenated or evaluated together by the MLP classifier to compute the final combined risk probability score.
+            </div>
+
+            <div class="mt-3">
+                <a href="/" class="btn btn-outline-primary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
